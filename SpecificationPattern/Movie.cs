@@ -1,24 +1,22 @@
 ﻿using System;
-
+using ServiceStack.DataAnnotations;
 
 namespace SpecificationPattern
 {
-    public class Movie : Entity
+    [Alias("Movies")]
+    public class Movie
     {
-        public virtual string Name { get; }
-        public virtual DateTime ReleaseDate { get; }
-        public virtual MpaaRating MpaaRating { get; }
-        public virtual string Genre { get; }
-        public virtual double Rating { get; }
+        [AutoIncrement]
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public MpaaRating MpaaRating { get;set; }
+        public string Genre { get; set; }
+        public double Rating { get; set; }
 
-
-        protected Movie()
-        {
-        }
 
 
         public Movie(string name, DateTime releaseDate, MpaaRating mpaaRating, string genre, double rating)
-            : this()
         {
             Name = name;
             ReleaseDate = releaseDate;
@@ -28,7 +26,7 @@ namespace SpecificationPattern
         }
     }
 
-
+    [Flags]
     public enum MpaaRating
     {
         G = 1,
