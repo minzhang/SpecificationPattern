@@ -14,6 +14,9 @@ packages/*
 Thumbs.db
 ehthumbs.db
 
+# Visual Studio cache/options directory
+.vs/
+
 # Folder config file
 Desktop.ini
 
