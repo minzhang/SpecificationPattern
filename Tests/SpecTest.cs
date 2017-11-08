@@ -13,8 +13,29 @@ namespace Tests
     [TestClass]
     public class SpecTest
     {
-        [TestMethod]
-        public void ConnectToLocalDB()
+        [TestInitialize]
+        public void InsertMovies()
+        {
+            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            var dbFactory = new OrmLiteConnectionFactory(
+                                    connectionString,
+                                    SqlServerDialect.Provider);
+            List<Movie> moviesToSave = new List<Movie> () {
+               new Movie("Terminator Genisys", new DateTime(2015,7,1), MpaaRating.PG13, "Action", 7.6),
+               new Movie("Toy Story 3", new DateTime(2010,6,18), MpaaRating.G, "Fantasy", 6.4),
+            };
+            using (IDbConnection db = dbFactory.Open())
+            {
+                db.CreateTableIfNotExists<Movie>();
+                foreach (var movie in moviesToSave)
+                {
+                    db.Save(movie);
+                }
+            }
+        }
+
+        [TestCleanup]
+        public void CleanupDB()
         {
             string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
             var dbFactory = new OrmLiteConnectionFactory(
@@ -23,15 +44,26 @@ namespace Tests
 
             using (IDbConnection db = dbFactory.Open())
             {
-                //db.CreateTableIfNotExists<Movie>();
-                //var movie = new Movie("Some Movie", new DateTime(2010, 2, 1), MpaaRating.G, "Triller", 6.0);
-
-                //db.Save(movie);
-
-                //var firstMovie = db.Select<Movie>(x => x.Id == 1);         
+                db.DeleteAll<Movie>();
             }
         }
 
+        [TestMethod]
+        public void TestLocalDBConnection()
+        {
+            string connectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=Movies;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+            var dbFactory = new OrmLiteConnectionFactory(
+                                    connectionString,
+                                    SqlServerDialect.Provider);
+
+            using (IDbConnection db = dbFactory.Open())
+            {  
+                var movies = db.Select<Movie>(x => x.Name == "Terminator Genisys");
+                Assert.AreEqual(movies.ToArray().Length, 1);
+            }
+        }
+
+        
         [TestMethod]
         public void T1()
         {
@@ -51,7 +83,7 @@ namespace Tests
 
             IReadOnlyList<Movie> movies = repository.Find(rRating);
 
-            Assert.AreEqual(3, movies.Count);
+            Assert.AreEqual(2, movies.Count);
         }
 
 
