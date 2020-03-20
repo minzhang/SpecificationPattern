@@ -2,6 +2,7 @@ Specification pattern implementation in C#
 =====================
 
 **This is an updated version of spec pattern implementation using ServiceStack OrmLite instead of NHibernate. - Min**
+Won't using C# any more.
 
 There's an updated and enhanced version of this code base available [here][L3]
 
